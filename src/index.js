@@ -3,6 +3,7 @@ import { Provider, connect } from 'react-redux';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { App } from './App';
+import { AddTodo } from './AddTodo';
 import {
   ADD_TODO,
   TOGGLE_TODO,
@@ -12,6 +13,7 @@ import {
   SHOW_COMPLETED,
 } from './actions';
 import { TodosList } from './TodosList';
+import { VisibleTodoList } from './VisibleTodoList';
 import { Filters } from './Filters';
 
 const todo = (state, action) => {
@@ -43,31 +45,7 @@ const todos = (state = [], action) => {
       return state;
   }
 };
-let AddTodo = ({ dispatch }) => {
-  let input;
-  console.log(input);
-  return (
-    <>
-      <input
-        ref={(node) => {
-          input = node;
-        }}
-      />
-      <button
-        onClick={() => {
-          dispatch({
-            type: 'ADD_TODO',
-            text: input.value,
-            id: Math.random(),
-          });
-          input.value = '';
-        }}
-      >
-        +
-      </button>
-    </>
-  );
-};
+
 const visibilityFilter = (state = SHOW_ALL, action) => {
   switch (action.type) {
     case SET_VISIBILITY_FILTER:
@@ -94,23 +72,15 @@ store.dispatch({
   text: 'Learn Aria',
 });
 
-const mapStateToTodoListProps = (state) => {
+const mapStateToLinkProps = (state, ownProps) => {
+  return { active: ownProps.filter === state.visibilityFilter };
+};
+const mapDispatchToLinkProps = (dispatch, ownProps) => {
   return {
-    todos: getVisibleTodos(state.todos, state.visibilityFilter),
+    onClick: () =>
+      dispatch({ type: SET_VISIBILITY_FILTER, filter: ownProps.filter }),
   };
 };
-const mapDispatchToTodoListProps = (dispatch) => {
-  return {
-    onTodoClick: (id) => dispatch({ type: TOGGLE_TODO, id }),
-    addTodo: (id, text) => dispatch({ type: ADD_TODO, id, text }),
-  };
-};
-
-const VisibleTodoList = connect(
-  mapStateToTodoListProps,
-  mapDispatchToTodoListProps
-)(TodosList);
-AddTodo = connect()(AddTodo);
 
 export const getVisibleTodos = (todos, filter) => {
   switch (filter) {
@@ -121,16 +91,6 @@ export const getVisibleTodos = (todos, filter) => {
     case SHOW_ACTIVE:
       return todos.filter((todo) => !todo.completed);
   }
-};
-
-const mapStateToLinkProps = (state, ownProps) => {
-  return { active: ownProps.filter === state.visibilityFilter };
-};
-const mapDispatchToLinkProps = (dispatch, ownProps) => {
-  return {
-    onClick: () =>
-      dispatch({ type: SET_VISIBILITY_FILTER, filter: ownProps.filter }),
-  };
 };
 
 let FilterLink = ({ onClick, filter, children, currentFilter }) => {
@@ -151,18 +111,14 @@ let FilterLink = ({ onClick, filter, children, currentFilter }) => {
 };
 export { FilterLink };
 FilterLink = connect(mapStateToLinkProps, mapDispatchToLinkProps)(FilterLink);
-const TodoApp = () => (
-  <>
-    <AddTodo />
-    <Filters />
-    <VisibleTodoList />
-  </>
-);
+const TodoApp = () => <></>;
 
 const render = () => {
   ReactDOM.render(
     <Provider store={store}>
-      <TodoApp />
+      <AddTodo />
+      <Filters />
+      <VisibleTodoList />
     </Provider>,
     document.getElementById('root')
   );
