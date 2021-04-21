@@ -1,4 +1,4 @@
-import { FilterLink } from './index';
+import { FilterLink } from './FilterLink';
 
 export const Filters = ({ visibilityFilter, onFilterClick, store }) => {
   return (

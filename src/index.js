@@ -1,9 +1,8 @@
 import { createStore, combineReducers } from 'redux';
-import { Provider, connect } from 'react-redux';
+import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { App } from './App';
-import { AddTodo } from './AddTodo';
 import {
   ADD_TODO,
   TOGGLE_TODO,
@@ -12,9 +11,6 @@ import {
   SHOW_ALL,
   SHOW_COMPLETED,
 } from './actions';
-import { TodosList } from './TodosList';
-import { VisibleTodoList } from './VisibleTodoList';
-import { Filters } from './Filters';
 
 const todo = (state, action) => {
   switch (action.type) {
@@ -72,16 +68,6 @@ store.dispatch({
   text: 'Learn Aria',
 });
 
-const mapStateToLinkProps = (state, ownProps) => {
-  return { active: ownProps.filter === state.visibilityFilter };
-};
-const mapDispatchToLinkProps = (dispatch, ownProps) => {
-  return {
-    onClick: () =>
-      dispatch({ type: SET_VISIBILITY_FILTER, filter: ownProps.filter }),
-  };
-};
-
 export const getVisibleTodos = (todos, filter) => {
   switch (filter) {
     case SHOW_ALL:
@@ -93,32 +79,10 @@ export const getVisibleTodos = (todos, filter) => {
   }
 };
 
-let FilterLink = ({ onClick, filter, children, currentFilter }) => {
-  if (filter === currentFilter) {
-    return <span>{children}</span>;
-  }
-  return (
-    <a
-      href='#'
-      onClick={(e) => {
-        e.preventDefault();
-        onClick(filter);
-      }}
-    >
-      {children}
-    </a>
-  );
-};
-export { FilterLink };
-FilterLink = connect(mapStateToLinkProps, mapDispatchToLinkProps)(FilterLink);
-const TodoApp = () => <></>;
-
 const render = () => {
   ReactDOM.render(
     <Provider store={store}>
-      <AddTodo />
-      <Filters />
-      <VisibleTodoList />
+      <App />
     </Provider>,
     document.getElementById('root')
   );
